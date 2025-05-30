@@ -5,8 +5,10 @@
             style="background-image: url(/assets/img/song-header.png)">
         </div>
         <div class="container mx-auto flex items-center">
-            <button type="button" class="z-50 h-24 w-24 text-3xl bg-white text-black rounded-full focus:outline-none">
-                <i class="fas fa-play"></i>
+            <button type="button" class="z-50 h-24 w-24 text-3xl bg-white text-black rounded-full focus:outline-none"
+                @click.prevent="!isPlaying ? newSong(song) : toggleAudio()">
+                <i class="fas"
+                    :class="{ 'fa-play': !isPlaying || song.docID !== currentSong.docID, 'fa-pause': isPlaying && song.docID === currentSong.docID }"></i>
             </button>
             <!-- Song Info -->
             <div class="z-50 text-left ml-8">
@@ -46,7 +48,8 @@
             </div>
         </div>
     </section>
-    <ul class="container mx-auto">
+    <!-- Comments -->
+    <ul class="container mx-auto" id="comments">
         <li class="p-6 bg-gray-50 border border-gray-200" v-for="comment in sortedComments" :key="comment.docID">
             <!-- Comment Author -->
             <div class="mb-5">
@@ -63,13 +66,15 @@
 import { doc, getDoc, getDocs, addDoc, updateDoc, query, where } from "firebase/firestore";
 import { songsCollectionRef, commentsCollectionRef, auth } from '@/includes/firebase';
 
-import { mapState } from "pinia";
+import { mapState, mapActions } from "pinia";
 import useUserStore from "@/stores/user";
+import usePlayerStore from "@/stores/player";
 
 export default {
     name: 'SongView',
     computed: {
         ...mapState(useUserStore, ['userLoggedIn']),
+        ...mapState(usePlayerStore, ['currentSong', 'isPlaying']),
         sortedComments() {
             return this.comments.slice().sort((a, b) => {
                 return this.sortOrder === 'asc'
@@ -93,6 +98,7 @@ export default {
         }
     },
     methods: {
+        ...mapActions(usePlayerStore, ['newSong', 'toggleAudio']),
         async addComment(values, context) {
             this.formInSubmission = true
             this.showAlert = true
@@ -157,7 +163,10 @@ export default {
             this.$router.push({ name: 'not-found' })
             return
         }
-        this.song = docSnapshot.data()
+        this.song = {
+            ...docSnapshot.data(),
+            docID: docSnapshot.id
+        }
 
         //check if exist sort param
         const { sort } = this.$route.query
