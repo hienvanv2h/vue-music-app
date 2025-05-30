@@ -64,7 +64,7 @@
 
 <script>
 import { doc, getDoc, getDocs, addDoc, updateDoc, query, where } from "firebase/firestore";
-import { songsCollectionRef, commentsCollectionRef, auth } from '@/includes/firebase';
+import { songsCollectionRef, getCommentsCollectionRef, auth } from '@/includes/firebase';
 
 import { mapState, mapActions } from "pinia";
 import useUserStore from "@/stores/user";
@@ -113,10 +113,12 @@ export default {
                 userId: auth.currentUser.uid
             }
 
-            await addDoc(commentsCollectionRef, comment)
+            const songRef = doc(songsCollectionRef, this.$route.params.id)
+            const commentsRef = getCommentsCollectionRef(this.$route.params.id)
+
+            await addDoc(commentsRef, comment)
             // update song comment count
             this.song.commentCount += 1
-            const songRef = doc(songsCollectionRef, this.$route.params.id)
             await updateDoc(songRef, {
                 commentCount: this.song.commentCount
             })
@@ -129,7 +131,8 @@ export default {
             await this.getComments()
         },
         async getComments() {
-            const q = query(commentsCollectionRef, where('songId', '==', this.$route.params.id));
+            const commentsRef = getCommentsCollectionRef(this.$route.params.id)
+            const q = query(commentsRef, where('songId', '==', this.$route.params.id));
             const querySnapshot = await getDocs(q);
 
             this.comments = []

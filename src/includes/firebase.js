@@ -1,6 +1,6 @@
 import { initializeApp } from "firebase/app"
 import { getAuth } from "firebase/auth"
-import { getFirestore, collection } from "firebase/firestore"
+import { getFirestore, collection, doc } from "firebase/firestore"
 import { getStorage } from "firebase/storage"
 
 const firebaseConfig = {
@@ -20,6 +20,10 @@ const storage = getStorage(app)
 
 const usersCollectionRef = collection(db, "users")
 const songsCollectionRef = collection(db, "songs")
-const commentsCollectionRef = collection(db, "comments")
 
-export { auth, db, usersCollectionRef, songsCollectionRef, commentsCollectionRef, storage }
+function getCommentsCollectionRef(songId) {
+  const songRef = doc(db, "songs", songId)
+  return collection(songRef, "comments")
+}
+
+export { auth, db, usersCollectionRef, songsCollectionRef, getCommentsCollectionRef, storage }
