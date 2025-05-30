@@ -4,12 +4,12 @@ import { getFirestore, collection } from "firebase/firestore"
 import { getStorage } from "firebase/storage"
 
 const firebaseConfig = {
-  apiKey: "AIzaSyCFjEnLLrXvQ9ZqnMM_H0G0ure6il5pWvw",
-  authDomain: "vuemusic-a2376.firebaseapp.com",
-  projectId: "vuemusic-a2376",
-  storageBucket: "vuemusic-a2376.firebasestorage.app",
-  messagingSenderId: "667142110403",
-  appId: "1:667142110403:web:6624c3810263a84f1a7676",
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
 }
 
 const app = initializeApp(firebaseConfig)
